@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            display: block;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Application Form</h1>
+    <div class="form-container">
+        <form id="application-form">
+            <div>
+                <label for="q1">Question 1: What is your name?</label>
+                <textarea id="q1" name="q1" rows="4"></textarea>
+            </div>
+            <div>
+                <label for="q2">Question 2: What is your age?</label>
+                <textarea id="q2" name="q2" rows="4"></textarea>
+            </div>
+            <div>
+                <label for="q3">Question 3: Why do you want to apply?</label>
+                <textarea id="q3" name="q3" rows="4"></textarea>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        <p class="error" id="error-message"></p>
+    </div>
+
+    <script>
+        // Function to handle form submission
+        document.getElementById('application-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent normal form submission
+            
+            // Get the answers from the form
+            const question1 = document.getElementById('q1').value;
+            const question2 = document.getElementById('q2').value;
+            const question3 = document.getElementById('q3').value;
+
+            // Basic form validation
+            if (!question1 || !question2 || !question3) {
+                document.getElementById('error-message').textContent = "All fields are required.";
+                return;
+            }
+
+            // Clear any previous error message
+            document.getElementById('error-message').textContent = '';
+
+            // Prepare the message for the Discord webhook
+            const message = `
+                # Application Form Submission
+                # Question 1 (Name): ${question1}
+                # Question 2 (Age): ${question2}
+                # Question 3 (Why Apply): ${question3}
+            `;
+
+            // The Discord webhook URL
+            const webhookUrl = 'https://discord.com/api/webhooks/1308835012304699534/tJjJoC6feuY-niBsQJmwcYNVYsnixQ8PPdglPDYNLPAIpz4dF0Xq7VzBQj6wLhZ3xud2';
+
+            // Send the data to the Discord webhook using fetch
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    content: message
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                alert('Application submitted successfully!');
+                // Optionally clear the form
+                document.getElementById('application-form').reset();
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                alert('Error submitting application.');
+            });
+        });
+    </script>
+</body>
+</html>
